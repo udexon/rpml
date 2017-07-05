@@ -1,0 +1,243 @@
+<html>
+
+
+<head>
+
+<style>
+.limit{
+    width:300px;
+    word-wrap: break-word;
+}
+</style>
+<script>
+
+function f( a ) {
+    return 'F'+':'+a.length;
+}
+
+function rpx( a , r ) {
+
+    l=a.length-1;
+
+    L=a[l]; L1=a[l-1]; L2=a[l-2];
+
+    if (L=='f') return L1+'('+L2+')';
+
+    else if (L=='e') { 
+        // j=JSON.parse(r);
+
+        // return 'e('+j[1]+')'; 
+        // return eval('"return '+j[1]+';"');
+        // return eval('return '+j[1]+';');
+        // return eval('return 1+1;');
+
+        // return 2;
+        // return 'eee';
+
+        // var n=eval('1+3');
+        // var n=eval(j[1]);
+        // var n=eval('eval("'+j[1]+'")');
+
+        var n=eval('eval("'+L1+'")');
+        return n.toString();
+
+        // return L1+'('+L2+')';
+    }
+    else if (L=='x') { // execute results separated by :
+
+        // var n=eval('eval("'+j[1]+'")');
+        // var n=eval('eval("'+L1+'")');
+
+        j=JSON.parse(r);
+        var n=eval(j[1]);
+
+        // var n=eval('1+3');
+        return n.toString();
+    }
+        // need to pop to next level to access elements separated by :
+        // return e() is effectively pushing the term to stack
+        // need code to evaluate and pop the stack again after new terms are pushed
+        // pass current stack from parent to this function to evaluate pop it?
+
+        // return eval(a[l]+'('+a+')');
+}
+
+function delim_l( s , c , p ) {
+    r = 'r ';
+
+    var a = s.split(c);
+
+    for (i in a) {                   
+        r = r + ',' +i+' '+ a[i]+' ';                                     
+    }
+
+    // return r+' |_'+i+' ['+a.length+' '+rpx(a);
+    // return r+' ['+a.length+' '+rpx(a, p );
+    //return JSON.stringify([a,r+' ['+a.length+' ',rpx(a, p )]);
+
+    return JSON.stringify([a,rpx(a, p )]);
+}
+
+function delim( s , c ) {
+
+    r = 'r ';
+
+    var a = s.split(c);
+
+    for (i in a) {                   
+        r = r + ','+i+' ' + a[i];                                     
+    }
+    return r;
+}
+
+
+function splitloop( s ) {
+    r = '';
+    // r=s+'; ';
+    // return s;
+
+    var a = s.split(":");
+
+    var j=[];
+
+    for (i in a) {
+
+        //document.getElementById("updateAvailable_" + a[i]).style.visibility
+                                             // = "visible";
+                                             
+        // r = r + ' :_' +i+' '+ delim_l(a[i],' ',r);    
+        j[i]=delim_l(a[i],' ',r);
+        r = r + j[i] +','; 
+        
+        // r = JSON.stringify( [s, delim_l(a[i],' ',r) ] );
+    }
+    return JSON.stringify( [s,j] );
+}
+
+let rpn = (ts, s = []) => {
+
+ts.split(' ').forEach(t => s.push(t == +t ? t : eval(s.splice(-2,1)[0] + t + s.pop()))); return s[0]; }
+
+let rpns = (ts, s = []) => { 
+
+var q=' x ';
+
+ts.split(' ').forEach(
+
+t =>  s.push(t == +t ? t : 
+ 
+  eval(
+  s.splice(-2,1)[0] + t + s.pop()
+  )
+  )
+  )
+  // {q=q+t+' ';}
+  ;
+ 
+  return s[0]+q; 
+}
+
+function showHint(str) {
+
+    str = document.getElementById("rpbox").value;
+    
+    str1 = splitloop(str);
+    alert(str1);
+    
+    if (str.length == 0) { 
+        document.getElementById("txtHint").innerHTML = "";
+        return;
+    } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById( "rpout").innerHTML = this.responseText;
+                
+
+  //document.getElementById("rpout").textContent = this.responseText;       
+    }
+        };
+        // xmlhttp.open("GET", "gethint.php?q=" + str, true);
+        // xmlhttp.send();
+        xmlhttp.open("POST", "log.php", true);
+        
+xmlhttp.setRequestHeader( "Content-type", "application/json");
+        
+// xmlhttp.setRequestHeader( "Content-type", "application/x-www-form-urlencoded");
+id="rpbox";
+        xmlhttp.send( str1);
+        
+    }
+}
+
+
+function readid(id){
+    "use strict";   
+    console.log("id=", id)
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", "view.php", true);
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState === 4 || this.status === 200){ 
+            console.log(this.responseText); // echo from php
+        }       
+    };
+
+    var str=document.getElementsByTagName("html")[0].outerHTML;
+
+    alert(str);
+    xmlhttp.send("id=" + id + " " + str);
+}
+
+
+</script>
+</head>
+<body>
+
+<h3>Reverse Polish Macro Language</h3>
+
+<p> Documentation: <br>
+<a href="https://www.linkedin.com/pulse/reverse-polish-macro-language-javascript-php-yet-david-ng-ph-d-?published=t">
+Reverse Polish Macro Language + JavaScript + PHP scripting: Yet Another "David vs. Goliath" Attempt in the Battle of GUI
+</a>
+
+<p>Enter RPML commands in the textarea below:</p>
+<textarea id="rpbox" cols="40" rows="4">
+</textarea>
+<p>
+<button type="button" onclick="rpmlFunction()">RPML</button>
+
+<div class="limit">
+<p id="rpout"></p>
+</div>
+
+
+<script>
+function myFunction() {
+    var x = document.getElementById("myTextarea").value;
+    document.getElementById("demo").innerHTML = x;
+}
+
+function rpmlFunction() {
+    var x = document.getElementById("rpbox").value;
+    document.getElementById("rpout").innerHTML = x;
+    
+    showHint(x);
+    // alert(splitloop(x));
+}
+
+function rpnFunction() {
+    var x = document.getElementById("rpbox").value;
+    document.getElementById("rpout").innerHTML = x;
+    
+    alert(rpn(x));
+    
+    document.getElementById("rpout").innerHTML = x + ' = ' + rpn(x);
+    // showHint(x);
+    // alert(splitloop(x));
+}
+</script>
+
+</body>
+</html>
