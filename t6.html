@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="[add your bin description]">
+  <meta charset="utf-8">
+  <title>TWGL 101</title>
+  <!-- you need to load TWGL from somewhere -
+    -- this grabs it from the CS server, which
+    -- might take a while
+    -->
+  
+  </head><body><canvas id="myCanvas" width="200" height="200" style="border:1px solid #000;">
+	 </canvas>
+  <br>
+  
+  
+  <script src="TWGL%20101_files/twgl-full"></script>
+
+
+
+<script id="jsbin-javascript">
+function app() {
+  "use strict";
+  var canvas = document.getElementById('myCanvas');
+  var context = canvas.getContext('2d');
+  var m4 = twgl.m4;
+  
+  // so we can spin
+  var orientation = 0;
+  
+  // giving things a Z - even though we ignore it
+  var triangle = [
+    [0,-30,0],
+    [-30,20,0],
+    [30,20,0]
+    ];
+  
+  function draw() {
+    // hack to clear the canvas fast
+    canvas.width = canvas.width;
+    
+    // draw a triangle - use transforms
+    // to position it (canvas)
+    context.save();
+    // be sure to observe the order here! 
+    // local transforms closer to object!
+    context.translate(50,50);
+    context.rotate(orientation);
+    context.beginPath();
+    // note that I loop over the points - which lets me
+    // deal with each point in the same way
+    // this will be useful when I do things to the points
+    triangle.forEach(
+      function(t,i) {
+        if (i===0) context.moveTo(t[0],t[1]);
+        else context.lineTo(t[0],t[1]);
+      }
+    );
+    context.closePath();
+    context.stroke();
+    context.restore();
+    
+    // now let's do the transformation with twglm4
+    // notice that I am making a new matrix here, and 
+    // that twgl wants a point
+    // be careful: twgl has things that do transformations
+    // and things that make transformations - we want to make
+    // transformations
+    var trans = m4.translation([150,50,0]);
+    var rot = m4.rotationZ(orientation);
+    // note that the order is backwards!
+    // see the tutorial on gl matrices
+    var both = m4.multiply(rot,trans);
+    
+    // now we repeat the code from above to draw the triangle
+    // we just need to transform the point each time
+    context.beginPath();
+    // note that I loop over the points - which lets me
+    // deal with each point in the same way
+    // this will be useful when I do things to the points
+    triangle.forEach(
+      function(t,i) {
+        var v = m4.transformPoint(both,t);
+        if (i===0) context.moveTo(v[0],v[1]);
+        else context.lineTo(v[0],v[1]);
+      }
+    );
+    context.closePath();
+    context.stroke();
+    orientation += 0.1;
+    window.requestAnimationFrame(draw);
+  }
+  window.requestAnimationFrame(draw);  
+}
+app();
+</script>
+
+
+
+<script id="jsbin-source-javascript" type="text/javascript">
+
+function app() {
+  "use strict";
+  var canvas = document.getElementById('myCanvas');
+  var context = canvas.getContext('2d');
+  var m4 = twgl.m4;
+  
+  // so we can spin
+  var orientation = 0;
+  
+  // giving things a Z - even though we ignore it
+  var triangle = [
+    [0,-30,0],
+    [-30,20,0],
+    [30,20,0]
+    ];
+  
+  function draw() {
+    // hack to clear the canvas fast
+    canvas.width = canvas.width;
+    
+    // draw a triangle - use transforms
+    // to position it (canvas)
+    context.save();
+    // be sure to observe the order here! 
+    // local transforms closer to object!
+    context.translate(50,50);
+    context.rotate(orientation);
+    context.beginPath();
+    // note that I loop over the points - which lets me
+    // deal with each point in the same way
+    // this will be useful when I do things to the points
+    triangle.forEach(
+      function(t,i) {
+        if (i===0) context.moveTo(t[0],t[1]);
+        else context.lineTo(t[0],t[1]);
+      }
+    );
+    context.closePath();
+    context.stroke();
+    context.restore();
+    
+    // now let's do the transformation with twglm4
+    // notice that I am making a new matrix here, and 
+    // that twgl wants a point
+    // be careful: twgl has things that do transformations
+    // and things that make transformations - we want to make
+    // transformations
+    var trans = m4.translation([150,50,0]);
+    var rot = m4.rotationZ(orientation);
+    // note that the order is backwards!
+    // see the tutorial on gl matrices
+    var both = m4.multiply(rot,trans);
+    
+    // now we repeat the code from above to draw the triangle
+    // we just need to transform the point each time
+    context.beginPath();
+    // note that I loop over the points - which lets me
+    // deal with each point in the same way
+    // this will be useful when I do things to the points
+    triangle.forEach(
+      function(t,i) {
+        var v = m4.transformPoint(both,t);
+        if (i===0) context.moveTo(v[0],v[1]);
+        else context.lineTo(v[0],v[1]);
+      }
+    );
+    context.closePath();
+    
+    // 20170707 One triangle disappears.
+    // context.stroke();
+    orientation += 0.1;
+    window.requestAnimationFrame(draw);
+  }
+  window.requestAnimationFrame(draw);  
+}
+app();</script>
+
+
+<h3>
+<a href="https://www.linkedin.com/pulse/reverse-polish-macro-language-javascript-php-yet-david-ng-ph-d-?published=t">
+Reverse Polish Macro Language</a></h3>
+
+<p>Enter RPML commands in the textarea below:</p>
+<textarea id="rpbox" cols="40" rows="4">document.getElementById('jsbin-javascript').outerHTML e:</textarea>
+<p>
+<button type="button" onclick="rpmlFunction()">RPML</button>
+<button type="button" onclick="rpnFunction()">rpn</button>
+
+</p><div class="limit">
+<p id="rpout">2017-07-09 00:13:32&gt; 
+document.getElementById('jsbin-javascript').outerHTML e: _ 
+[["document.getElementById('jsbin-javascript').outerHTML","e"],"<script id="\&quot;jsbin-javascript\&quot;">\nfunction app() {\n  \"use strict\";\n  var canvas = document.getElementById('myCanvas');\n  var context = canvas.getContext('2d');\n  var m4 = twgl.m4;\n  \n  // so we can spin\n  var orientation = 0;\n  \n  // giving things a Z - even though we ignore it\n  var triangle = [\n    [0,-30,0],\n    [-30,20,0],\n    [30,20,0]\n    ];\n  \n  function draw() {\n    // hack to clear the canvas fast\n    canvas.width = canvas.width;\n    \n    // draw a triangle - use transforms\n    // to position it (canvas)\n    context.save();\n    // be sure to observe the order here! \n    // local transforms closer to object!\n    context.translate(50,50);\n    context.rotate(orientation);\n    context.beginPath();\n    // note that I loop over the points - which lets me\n    // deal with each point in the same way\n    // this will be useful when I do things to the points\n    triangle.forEach(\n      function(t,i) {\n        if (i===0) context.moveTo(t[0],t[1]);\n        else context.lineTo(t[0],t[1]);\n      }\n    );\n    context.closePath();\n    context.stroke();\n    context.restore();\n    \n    // now let's do the transformation with twglm4\n    // notice that I am making a new matrix here, and \n    // that twgl wants a point\n    // be careful: twgl has things that do transformations\n    // and things that make transformations - we want to make\n    // transformations\n    var trans = m4.translation([150,50,0]);\n    var rot = m4.rotationZ(orientation);\n    // note that the order is backwards!\n    // see the tutorial on gl matrices\n    var both = m4.multiply(rot,trans);\n    \n    // now we repeat the code from above to draw the triangle\n    // we just need to transform the point each time\n    context.beginPath();\n    // note that I loop over the points - which lets me\n    // deal with each point in the same way\n    // this will be useful when I do things to the points\n    triangle.forEach(\n      function(t,i) {\n        var v = m4.transformPoint(both,t);\n        if (i===0) context.moveTo(v[0],v[1]);\n        else context.lineTo(v[0],v[1]);\n      }\n    );\n    context.closePath();\n    context.stroke();\n    orientation += 0.1;\n    window.requestAnimationFrame(draw);\n  }\n  window.requestAnimationFrame(draw);  \n}\napp();\n</script>"] _ ltr <p>0null</p></p>
+</div>
+
+
+<script>
+
+function f( a ) {
+    return 'F'+':'+a.length;
+}
+
+function rpx( a , r ) {
+
+    l=a.length-1;
+
+    L=a[l]; L1=a[l-1]; L2=a[l-2];
+
+    if (L=='f') return L1+'('+L2+')';
+
+    else if (L=='e') { 
+        // j=JSON.parse(r);
+
+        // return 'e('+j[1]+')'; 
+        // return eval('"return '+j[1]+';"');
+        // return eval('return '+j[1]+';');
+        // return eval('return 1+1;');
+
+        // return 2;
+        // return 'eee';
+
+        // var n=eval('1+3');
+        // var n=eval(j[1]);
+        // var n=eval('eval("'+j[1]+'")');
+
+        var n=eval('eval("'+L1+'")');
+        return n.toString();
+
+        // return L1+'('+L2+')';
+    }
+    else if (L=='x') { // execute results separated by :
+
+        // var n=eval('eval("'+j[1]+'")');
+        // var n=eval('eval("'+L1+'")');
+
+        j=JSON.parse(r);
+        var n=eval(j[1]);
+
+        // var n=eval('1+3');
+        return n.toString();
+    }
+        // need to pop to next level to access elements separated by :
+        // return e() is effectively pushing the term to stack
+        // need code to evaluate and pop the stack again after new terms are pushed
+        // pass current stack from parent to this function to evaluate pop it?
+
+        // return eval(a[l]+'('+a+')');
+}
+
+function delim_l( s , c , p ) {
+    r = 'r ';
+
+    var a = s.split(c);
+
+    for (i in a) {                   
+        r = r + ',' +i+' '+ a[i]+' ';                                     
+    }
+
+    // return r+' |_'+i+' ['+a.length+' '+rpx(a);
+    // return r+' ['+a.length+' '+rpx(a, p );
+    //return JSON.stringify([a,r+' ['+a.length+' ',rpx(a, p )]);
+
+    return JSON.stringify([a,rpx(a, p )]);
+}
+
+function delim( s , c ) {
+
+    r = 'r ';
+
+    var a = s.split(c);
+
+    for (i in a) {                   
+        r = r + ','+i+' ' + a[i];                                     
+    }
+    return r;
+}
+
+
+function splitloop( s ) {
+    r = '';
+    // r=s+'; ';
+    // return s;
+
+    var a = s.split(":");
+
+    var j=[];
+
+    for (i in a) {
+
+        //document.getElementById("updateAvailable_" + a[i]).style.visibility
+                                             // = "visible";
+                                             
+        // r = r + ' :_' +i+' '+ delim_l(a[i],' ',r);    
+        j[i]=delim_l(a[i],' ',r);
+        r = r + j[i] +','; 
+        
+        // r = JSON.stringify( [s, delim_l(a[i],' ',r) ] );
+    }
+    return JSON.stringify( [s,j] );
+}
+
+let rpn = (ts, s = []) => {
+
+ts.split(' ').forEach(t => s.push(t == +t ? t : eval(s.splice(-2,1)[0] + t + s.pop()))); return s[0]; }
+
+let rpns = (ts, s = []) => { 
+
+var q=' x ';
+
+ts.split(' ').forEach(
+
+t =>  s.push(t == +t ? t : 
+ 
+  eval(
+  s.splice(-2,1)[0] + t + s.pop()
+  )
+  )
+  )
+  // {q=q+t+' ';}
+  ;
+ 
+  return s[0]+q; 
+}
+
+function showHint(str) {
+
+    str = document.getElementById("rpbox").value;
+    
+    str1 = splitloop(str);
+    alert(str1);
+    
+    if (str.length == 0) { 
+        document.getElementById("txtHint").innerHTML = "";
+        return;
+    } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                // document.getElementById( "rpout").innerHTML = this.responseText;
+                
+
+  document.getElementById("rpout").textContent = this.responseText;       
+    }
+        };
+        // xmlhttp.open("GET", "gethint.php?q=" + str, true);
+        // xmlhttp.send();
+        xmlhttp.open("POST", "log.php", true);
+        
+xmlhttp.setRequestHeader( "Content-type", "application/json");
+        
+// xmlhttp.setRequestHeader( "Content-type", "application/x-www-form-urlencoded");
+id="rpbox";
+        xmlhttp.send( str1);
+        
+    }
+}
+
+
+function readid(id){
+    "use strict";   
+    console.log("id=", id)
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", "view.php", true);
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState === 4 || this.status === 200){ 
+            console.log(this.responseText); // echo from php
+        }       
+    };
+
+    var str=document.getElementsByTagName("html")[0].outerHTML;
+
+    alert(str);
+    xmlhttp.send("id=" + id + " " + str);
+}
+
+function myFunction() {
+    var x = document.getElementById("myTextarea").value;
+    document.getElementById("demo").innerHTML = x;
+}
+
+function rpmlFunction() {
+    var x = document.getElementById("rpbox").value;
+    document.getElementById("rpout").innerHTML = x;
+    
+    showHint(x);
+    // alert(splitloop(x));
+}
+
+function rpnFunction() {
+    var x = document.getElementById("rpbox").value;
+    document.getElementById("rpout").innerHTML = x;
+    
+    alert(rpn(x));
+    
+    document.getElementById("rpout").innerHTML = x + ' = ' + rpn(x);
+    // showHint(x);
+    // alert(splitloop(x));
+}
+</script>
+
+
+
+</body></html>
